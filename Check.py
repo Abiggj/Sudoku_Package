@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QApplication
 timn = ''
 is_solved = False
 question_solveable = dict()
+did = ""
 
 
 class puzzle:
@@ -45,6 +46,9 @@ class Ui_PlayWindow(QMainWindow, object):
         # self.timcl = Timeclass()
         # self.thpl = ThreadPool()
         # self.ppuuzz = puzzle(self.puzz, self.rating)
+        self.msgs = QtWidgets.QMessageBox()
+        self.msgs.setWindowTitle("Loading!!")
+        self.msgs.setText("Please Wait while the game is loading.")
         self.centralwidget = QtWidgets.QWidget(PlayWindow)
         self.menubar = QtWidgets.QMenuBar(PlayWindow)
         self.Exittt = QtWidgets.QAction(PlayWindow)
@@ -363,11 +367,22 @@ class Ui_PlayWindow(QMainWindow, object):
         self.Exittt.setText(_translate("MainWindow", "Exit"))
         self.GIVE.setText(_translate("MainWindow", "GIVE UP"))
 
+    def load_msg(self):
+        self.msgs.exec_()
+        self.msgs.buttons()[0].clicked.connect(self.mmm)
+
     def tim(self, timn):
         self.lcdNumber.display(timn)
 
+    def mmm(self):
+        global did
+        did = "already"
+
     def molve(self):
-        global question_solveable
+        global question_solveable, did
+        if not did == "already":
+            self.msgs.hide()
+        did = ''
         self.thpl.apply_async(self.timcl.run, ())
         self.pushButton.setEnabled(True)
         y = 0
@@ -412,6 +427,7 @@ class Ui_PlayWindow(QMainWindow, object):
         if event.type() == QtCore.QEvent.MouseButtonPress and object is self.pushButton2:
             self.molcl = MolveClass(ques_org=self.ppuuzz.puzzk)
             self.molcl.MOLVE.connect(self.molve)
+            self.molcl.MSGG.connect(self.load_msg)
             self.thpl.apply_async(self.molcl.run, ())
             self.timcl.TIME.connect(self.tim)
             self.pushButton2.setEnabled(False)
@@ -503,12 +519,14 @@ class Timeclass(QtCore.QThread):
 
 class MolveClass(QtCore.QThread,):
     MOLVE = pyqtSignal()
+    MSGG = pyqtSignal()
 
     def __init__(self, ques_org, parent=None):
         self.q = ques_org
         super(MolveClass, self).__init__(parent)
 
     def run(self):
+        self.MSGG.emit()
         global question_solveable
         question_solveable = SOLVER.solverr(self.q)
         question_solveable.solve_please()
