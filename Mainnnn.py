@@ -24,9 +24,20 @@ class Ui_MainWindow(QMainWindow, object):
         self.solv_win = ''
 
     def pl_clos(self, event):
-        MainWindow.show()
-        self.play_win.thpl.terminate()
-        event.accept()
+        if self.play_win.gave == "":
+            reply = QtWidgets.QMessageBox.question(self, 'Attention!!!',
+                                         "You were about to leave the game. Do you Really Want to Quit?", QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+
+            if reply == QtWidgets.QMessageBox.Yes:
+                MainWindow.show()
+                self.play_win.thpl.terminate()
+                event.accept()
+            else:
+                event.ignore()
+        else:
+            MainWindow.show()
+            self.play_win.thpl.terminate()
+            event.accept()
 
     def slv_clos(self, event):
         self.solv_win.thpl.terminate()

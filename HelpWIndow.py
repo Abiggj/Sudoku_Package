@@ -51,7 +51,6 @@ class Window(QWidget):
 
         filename = 'Doge.mp4'
         file_path = str(Path(filename).resolve())
-        print(file_path)
 
         if filename != '':
             self.mediaPlayer.setMedia(QMediaContent(QUrl.fromLocalFile(file_path)))

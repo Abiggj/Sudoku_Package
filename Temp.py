@@ -422,7 +422,6 @@ class MolveClass(QtCore.QThread):
         if question_solveable.possible_check():
             self.btn_cmnd.emit('False')
             question_solveable.solve_please()
-            print(question_solveable.possible_check())
             question_solveable = question_solveable.solved_set
             y = 0
             for x in range(10, 100):
