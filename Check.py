@@ -10,6 +10,7 @@ timn = ''
 is_solved = False
 question_solveable = dict()
 did = ""
+gave = ""
 
 
 class puzzle:
@@ -39,7 +40,6 @@ class Ui_PlayWindow(QMainWindow, object):
         self.is_open = True
 
     def closerr(self, event):
-        print('hello')
         self.thpl.terminate()
 
     def setupUi(self, PlayWindow):
@@ -321,6 +321,7 @@ class Ui_PlayWindow(QMainWindow, object):
         self.pos_97.setObjectName("pos_97")
         self.pos_77.setGeometry(QtCore.QRect(220, 220, 31, 31))
         self.pos_77.setObjectName("pos_77")
+        self.gave = ''
         self.pushButton.setGeometry(QtCore.QRect(340, 20, 89, 31))
         self.pushButton.setObjectName("pushButton")
         self.pushButton2.setGeometry(QtCore.QRect(340, 60, 89, 31))
@@ -400,24 +401,30 @@ class Ui_PlayWindow(QMainWindow, object):
                 y += 1
 
     def Gave_up(self):
-        global question_solveable
-        y = 0
-        for x in range(10, 100):
-            if x % 10 == 0:
-                continue
-            elif self.ppuuzz.puzzk[x] > 0:
-                # self.question_original[y].setText(str(self.ppuuzz.puzzk[x]))
-                self.question_original[y].setStyleSheet("color: red;")
-                y+=1
-            else:
-                self.question_original[y].setEnabled(False)
-                self.question_original[y].setStyleSheet("color: blue;")
-                self.question_original[y].setText(str(question_solveable[x]))
-                y+=1
-        self.timcl.pause()
-        self.GIVE.setEnabled(False)
-        self.pushButton.setEnabled(False)
-        self.lcdNumber.display('Bad')
+        reply = QtWidgets.QMessageBox.question(self, 'Attention!!!',
+                                               "Are you sure?",
+                                               QtWidgets.QMessageBox.Yes, QtWidgets.QMessageBox.No)
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            global question_solveable
+            self.gave = "yes"
+            y = 0
+            for x in range(10, 100):
+                if x % 10 == 0:
+                    continue
+                elif self.ppuuzz.puzzk[x] > 0:
+                    # self.question_original[y].setText(str(self.ppuuzz.puzzk[x]))
+                    self.question_original[y].setStyleSheet("color: red;")
+                    y+=1
+                else:
+                    self.question_original[y].setEnabled(False)
+                    self.question_original[y].setStyleSheet("color: blue;")
+                    self.question_original[y].setText(str(question_solveable[x]))
+                    y+=1
+            self.timcl.pause()
+            self.GIVE.setEnabled(False)
+            self.pushButton.setEnabled(False)
+            self.lcdNumber.display('Bad')
 
     def eventFilter(self, object, event):
         if event.type() == QtCore.QEvent.FocusIn and object in self.question_original:
@@ -530,7 +537,6 @@ class MolveClass(QtCore.QThread,):
         global question_solveable
         question_solveable = SOLVER.solverr(self.q)
         question_solveable.solve_please()
-        print(question_solveable.possible_check())
         question_solveable = question_solveable.solved_set
         self.MOLVE.emit()
 
