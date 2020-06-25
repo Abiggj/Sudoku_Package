@@ -1,16 +1,16 @@
 from multiprocessing.pool import ThreadPool
 import time
-import SOLVER
+import SOLVER, High_Scores
 from PyQt5 import QtCore, QtGui, QtWidgets
-import sys
-from PyQt5.QtCore import pyqtSignal, QObject
-from PyQt5.QtWidgets import QMainWindow, QApplication
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QMainWindow
 
 timn = ''
 is_solved = False
 question_solveable = dict()
 did = ""
 gave = ""
+avg_time = [0,45,60,75,90,105]
 
 
 class puzzle:
@@ -26,7 +26,10 @@ class puzzle:
             else:
                 self.puzzk[y] = 0
                 y += 1
-        self.rating = rating
+        self.rating = int(float(rating))
+        print(rating)
+        if self.rating < 1:
+            self.rating = 1
 
 
 class Ui_PlayWindow(QMainWindow, object):
@@ -360,7 +363,7 @@ class Ui_PlayWindow(QMainWindow, object):
 
     def retranslateUi(self, PlayWindow):
         _translate = QtCore.QCoreApplication.translate
-        PlayWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        PlayWindow.setWindowTitle(_translate("MainWindow", "PLAY GAME!!"))
         self.pushButton.setText(_translate("MainWindow", "SOLVED"))
         self.pushButton2.setText(_translate("MainWindow", "PLAY"))
         self.menuMenu.setTitle(_translate("MainWindow", "Menu"))
@@ -430,7 +433,7 @@ class Ui_PlayWindow(QMainWindow, object):
         if event.type() == QtCore.QEvent.FocusIn and object in self.question_original:
             global is_solved
             if not is_solved:
-                obj.clear()
+                object.clear()
         if event.type() == QtCore.QEvent.MouseButtonPress and object is self.pushButton2:
             self.molcl = MolveClass(ques_org=self.ppuuzz.puzzk)
             self.molcl.MOLVE.connect(self.molve)
@@ -442,7 +445,7 @@ class Ui_PlayWindow(QMainWindow, object):
         elif event.type() == QtCore.QEvent.MouseButtonPress and object is self.pushButton:
             self.timcl.pause()
             self.triedd = True
-            global question_solveable
+            global question_solveable,timn
             y = 0
             x = 0
             answer_dict = dict()
@@ -480,10 +483,40 @@ class Ui_PlayWindow(QMainWindow, object):
                         y += 1
             if self.triedd:
                 if answer_dict == question_solveable:
-                    msg = QtWidgets.QMessageBox()
-                    msg.setWindowTitle("WOHOOO!!")
-                    msg.setText("You Have Done it.")
-                    msg.exec_()
+                    self.highscore = QtWidgets.QDialog(self.centralwidget)
+                    text, ok = QtWidgets.QInputDialog.getText(self, 'You Won the game!!', 'Enter your name:')
+                    import csv
+                    if int(float(self.rating)) < 1:
+                        self.rating = 1
+                    rate = int(float(self.rating))
+                    minutes = int(timn[:-3])
+                    if minutes < 1:
+                        minutes = 1
+                    score = int(((rate / minutes) * avg_time[rate]) * 0.3)
+                    score_list = list()
+                    current_score = [text, timn, rate, score]
+                    with open("scores.csv", 'r') as file:
+                        reader = csv.reader(file)
+                        for sc_val in reader:
+                            score_list.append(sc_val)
+                    print(current_score)
+                    with open("scores.csv", 'w') as file:
+                        writer = csv.writer(file)
+                        for sc_val in score_list:
+                            if int(float(sc_val[3])) < current_score[3]:
+                                writer.writerow(current_score)
+                                print('hello')
+                            writer.writerow(sc_val)
+                            print('hello')
+                    score_list = []
+                    with open("scores.csv", 'r') as file:
+                        reader = csv.reader(file)
+                        for sc_val in reader:
+                            score_list.append(sc_val)
+                            print(sc_val)
+                    self.highscore_win = High_Scores.Ui_Dialog(score_list[:10])
+                    self.highscore_win.setupUi(self.highscore)
+                    self.highscore.exec_()
                     is_solved =True
                     self.pushButton.setEnabled(False)
                     self.GIVE.setEnabled(False)
