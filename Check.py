@@ -10,10 +10,7 @@ is_solved = False
 question_solveable = dict()
 did = ""
 gave = ""
-<<<<<<< HEAD
 avg_time = [0,45,60,75,90,105]
-=======
->>>>>>> abe5ee08f71f2c95e8502a8389f47ac2929641ce
 
 
 class puzzle:
@@ -30,7 +27,6 @@ class puzzle:
                 self.puzzk[y] = 0
                 y += 1
         self.rating = int(float(rating))
-        print(rating)
         if self.rating < 1:
             self.rating = 1
 
@@ -502,21 +498,21 @@ class Ui_PlayWindow(QMainWindow, object):
                         reader = csv.reader(file)
                         for sc_val in reader:
                             score_list.append(sc_val)
-                    print(current_score)
+                    (current_score)
                     with open("scores.csv", 'w') as file:
                         writer = csv.writer(file)
                         for sc_val in score_list:
                             if int(float(sc_val[3])) < current_score[3]:
                                 writer.writerow(current_score)
-                                print('hello')
+                                ('hello')
                             writer.writerow(sc_val)
-                            print('hello')
+                            ('hello')
                     score_list = []
                     with open("scores.csv", 'r') as file:
                         reader = csv.reader(file)
                         for sc_val in reader:
                             score_list.append(sc_val)
-                            print(sc_val)
+                            (sc_val)
                     self.highscore_win = High_Scores.Ui_Dialog(score_list[:10])
                     self.highscore_win.setupUi(self.highscore)
                     self.highscore.exec_()
