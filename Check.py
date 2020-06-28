@@ -10,7 +10,10 @@ is_solved = False
 question_solveable = dict()
 did = ""
 gave = ""
+<<<<<<< HEAD
 avg_time = [0,45,60,75,90,105]
+=======
+>>>>>>> abe5ee08f71f2c95e8502a8389f47ac2929641ce
 
 
 class puzzle:
